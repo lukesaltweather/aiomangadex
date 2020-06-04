@@ -5,6 +5,12 @@ import ujson
 from typing import List, Union
 import io
 
+async def download_file(session: aiohttp.ClientSession, url: str):
+    async with session.get(url) as response:
+        assert response.status == 200
+        # For large files use response.content.read(chunk_size) instead.
+        return io.BytesIO(await response.read())
+
 class Language:
     def __init__(self, code):
         self.lang_code = code
@@ -45,14 +51,15 @@ class Chapter:
         else:
             link = self.links[page]
         async with self.session.get(link) as resp:
-            buffer = io.BytesIO(await resp.read())
-            return buffer
+            return io.BytesIO(await resp.read())
 
     async def download_all_pages(self, data_saver: bool=True) -> List[io.BytesIO]:
         if self.links is None:
-            link = (await self.fetch_page_links(data_saver))
+            links = (await self.fetch_page_links(data_saver))
         else:
             links = self.links
+        download_futures = [download_file(self.session, url) for url in links]
+        return await asyncio.gather(*download_futures)
 
     async def fetch_page_links(self, data_saver: bool=True) -> List[str]:
         d = "data-saver" if data_saver else "data"
@@ -95,11 +102,12 @@ class Manga:
 async def fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> Manga:
     if session is not None:
         user_session = True
+        session._json_serialize=ujson.dumps
         async with session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
             response = await resp.json()
     else:
         user_session = False
-        session = aiohttp.ClientSession()
+        session = aiohttp.ClientSession(json_serialize=ujson.dumps)
         async with session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
             response = await resp.json()
     chapters = []
