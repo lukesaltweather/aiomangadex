@@ -87,7 +87,7 @@ class Manga:
     links: dict
     chapters: List[Chapter]
     session: aiohttp.ClientSession = None
-    user_session : bool = False
+    _user_session : bool = False
 
     def find_chapters(self, title: str = None, id: int = None, language: Union[Language, str] = None, chapter_number: int = None) -> List[Chapter]:
         pass
@@ -96,7 +96,7 @@ class Manga:
         await self.session.close()
 
     def __del__(self):
-        if not self.user_session:
+        if not self._user_session:
             asyncio.create_task(self.session.close())
 
 async def fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> Manga:
@@ -113,4 +113,4 @@ async def fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> M
     chapters = []
     for key, value in response.get('chapter').items():
         chapters.append(Chapter(id=key, **dict(value), session=session))
-    return Manga(**dict(response.get('manga')), chapters=chapters, id=manga_id, session=session, user_session=user_session)
+    return Manga(**dict(response.get('manga')), chapters=chapters, id=manga_id, session=session, _user_session=user_session)
