@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga &#8212; aiomangadex 2020-06-14 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Welcome to aiomangadex’ documentation!" href="../index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="manga">
+<h1>Manga<a class="headerlink" href="#manga" title="Permalink to this headline">¶</a></h1>
+<p>The following sections lines out the Manga class, as well as how to fetch one from the API.</p>
+<div class="section" id="ext-api">
+<span id="id1"></span><h2>Manga<a class="headerlink" href="#ext-api" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="aiomangadex.Manga">
+<em class="property">class </em><code class="sig-prename descclassname">aiomangadex.</code><code class="sig-name descname">Manga</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">cover_url</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">description</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">rating</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">alt_names</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">title</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">artist</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">author</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">status</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">genres</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">last_chapter</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">lang_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">lang_flag</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">hentai</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">links</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">chapters</span><span class="p">:</span> <span class="n">aiomangadex.chapter.ChapterList</span></em>, <em class="sig-param"><span class="n">session</span><span class="p">:</span> <span class="n">aiohttp.client.ClientSession</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">_user_session</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiomangadex.Manga" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents part of result of <a class="reference external" href="https://mangadex.org/api/manga">https://mangadex.org/api/manga</a>/{id}</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some of the chapter data is <em>not</em> included in the initial fetch, meaning you’ll have to fetch the missing things in the <code class="xref py py-class docutils literal notranslate"><span class="pre">aiomangadex.Chapter</span></code>.</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="fetching">
+<h2>Fetching<a class="headerlink" href="#fetching" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="aiomangadex.fetch_manga">
+<em class="property">async </em><code class="sig-prename descclassname">aiomangadex.</code><code class="sig-name descname">fetch_manga</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">manga_id</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">session</span><span class="p">:</span> <span class="n">aiohttp.client.ClientSession</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; aiomangadex.aiomangadex.Manga<a class="headerlink" href="#aiomangadex.fetch_manga" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used for fetching a manga by id. If no session is provided, the library will create one per manga fetched.
+It is recommended to reuse the aiohttp ClientSession instances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manga_id</strong> (<em>int</em>) – Manga to fetch</p></li>
+<li><p><strong>session</strong> (<em>aiohttp.ClientSession</em><em>, </em><em>optional</em>) – defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Manga instance with some chapter data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#aiomangadex.Manga" title="aiomangadex.Manga">Manga</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">aiomangadex</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Manga</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ext-api">Manga</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fetching">Fetching</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to aiomangadex’ documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, lukesaltweather.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
