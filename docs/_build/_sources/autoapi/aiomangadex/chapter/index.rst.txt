@@ -1,0 +1,250 @@
+:mod:`aiomangadex.chapter`
+==========================
+
+.. py:module:: aiomangadex.chapter
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   aiomangadex.chapter.Chapter
+   aiomangadex.chapter.ChapterList
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   aiomangadex.chapter.download_file
+
+
+.. function:: download_file(session: aiohttp.ClientSession, url: str) -> io.BytesIO
+   :async:
+
+   Helper function for downloading.
+
+   Args:
+       session (aiohttp.ClientSession): active Session
+       url (str): URL to image
+
+   Returns:
+       io.BytesIO: Buffer with Image
+
+
+.. py:class:: Chapter
+
+   A class that matches the chapter endpoint.
+       
+
+   .. attribute:: id
+      :annotation: :int
+
+      
+
+   .. attribute:: manga_id
+      :annotation: :int
+
+      
+
+   .. attribute:: volume
+      :annotation: :int
+
+      
+
+   .. attribute:: hash
+      :annotation: :str
+
+      
+
+   .. attribute:: chapter
+      :annotation: :float
+
+      
+
+   .. attribute:: title
+      :annotation: :str
+
+      
+
+   .. attribute:: lang_code
+      :annotation: :str
+
+      
+
+   .. attribute:: lang_name
+      :annotation: :str
+
+      
+
+   .. attribute:: group_id
+      :annotation: :int
+
+      
+
+   .. attribute:: group_name
+      :annotation: :str
+
+      
+
+   .. attribute:: group_id_2
+      :annotation: :int
+
+      
+
+   .. attribute:: group_name_2
+      :annotation: :str
+
+      
+
+   .. attribute:: group_id_3
+      :annotation: :int
+
+      
+
+   .. attribute:: group_name_3
+      :annotation: :str
+
+      
+
+   .. attribute:: timestamp
+      :annotation: :int
+
+      
+
+   .. attribute:: comments
+      :annotation: :int
+
+      
+
+   .. attribute:: server
+      :annotation: :str
+
+      
+
+   .. attribute:: page_array
+      :annotation: :List[str]
+
+      
+
+   .. attribute:: long_strip
+      :annotation: :bool
+
+      
+
+   .. attribute:: status
+      :annotation: :str
+
+      
+
+   .. attribute:: links
+      :annotation: :List[str]
+
+      
+
+   .. attribute:: session
+      :annotation: :aiohttp.ClientSession
+
+      
+
+   .. attribute:: _user_session
+      :annotation: :bool = False
+
+      
+
+   .. method:: download_page(self, page: int, data_saver: bool = True)
+      :async:
+
+
+      Args:
+          page (int): Index of page to download
+          data_saver (bool, optional): Whether to use the mangadex datasaver mode for images. Defaults to True.
+
+      Returns:
+          io.BytesIO: A buffer with the image.
+
+
+   .. method:: download_all_pages(self, data_saver: bool = True)
+      :async:
+
+
+
+   .. method:: fetch_pages(self, data_saver: bool = True)
+      :async:
+
+
+
+   .. method:: _fetch(self)
+      :async:
+
+
+
+   .. method:: __del__(self)
+
+
+
+
+.. py:class:: ChapterList(chapters: List[Chapter])
+
+   A class used for managing and filtering a Manga Instance's chapters.
+       
+
+   .. method:: __getitem__(self, i)
+
+
+
+   .. method:: _append(self, element: Chapter)
+
+
+
+   .. method:: filter_language(self, *lang: Union[Language, str])
+
+
+      Filter by languages, connected by logical OR.
+      Returns a ChapterList of the chapters with corresponding languages.
+
+      Returns:
+          ChapterList
+
+
+   .. method:: filter_title(self, *titles, difference_cutoff: float = 0.8)
+
+
+      Filter by titles, connected by logical OR.
+      Returns a ChapterList of the chapters with corresponding titles.
+
+      Returns:
+          ChapterList
+
+
+   .. method:: filter_chapter_number(self, *numbers: List[int])
+
+
+      Filter by chapter number, connected by logical OR.
+      Returns a ChapterList of the chapters with according chapter numbers.
+
+      Returns:
+          ChapterList
+
+
+   .. method:: filter_id(self, *ids: List[int])
+
+
+      Filter by id, connected by logical OR.
+      Returns ChapterList of chapters with corresponding ids.
+
+      Returns:
+          ChapterList
+
+
+   .. method:: __len__(self)
+
+
+
+

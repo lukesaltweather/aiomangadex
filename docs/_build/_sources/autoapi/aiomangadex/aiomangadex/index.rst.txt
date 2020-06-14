@@ -1,0 +1,137 @@
+:mod:`aiomangadex.aiomangadex`
+==============================
+
+.. py:module:: aiomangadex.aiomangadex
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   aiomangadex.aiomangadex.Manga
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   aiomangadex.aiomangadex.fetch_manga
+   aiomangadex.aiomangadex.fetch_chapter
+
+
+.. py:class:: Manga
+
+   .. attribute:: id
+      :annotation: :int
+
+      
+
+   .. attribute:: cover_url
+      :annotation: :str
+
+      
+
+   .. attribute:: description
+      :annotation: :str
+
+      
+
+   .. attribute:: rating
+      :annotation: :dict
+
+      
+
+   .. attribute:: alt_names
+      :annotation: :list
+
+      
+
+   .. attribute:: title
+      :annotation: :str
+
+      
+
+   .. attribute:: artist
+      :annotation: :str
+
+      
+
+   .. attribute:: author
+      :annotation: :str
+
+      
+
+   .. attribute:: status
+      :annotation: :int
+
+      
+
+   .. attribute:: genres
+      :annotation: :list
+
+      
+
+   .. attribute:: last_chapter
+      :annotation: :int
+
+      
+
+   .. attribute:: lang_name
+      :annotation: :str
+
+      
+
+   .. attribute:: lang_flag
+      :annotation: :str
+
+      
+
+   .. attribute:: hentai
+      :annotation: :bool
+
+      
+
+   .. attribute:: links
+      :annotation: :dict
+
+      
+
+   .. attribute:: chapters
+      :annotation: :ChapterList
+
+      
+
+   .. attribute:: session
+      :annotation: :aiohttp.ClientSession
+
+      
+
+   .. attribute:: _user_session
+      :annotation: :bool = False
+
+      
+
+   .. method:: close_session(self)
+      :async:
+
+
+
+   .. method:: __del__(self)
+
+
+
+
+.. function:: fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> Manga
+   :async:
+
+
+.. function:: fetch_chapter(chapter_id: int, session: aiohttp.ClientSession = None) -> Chapter
+   :async:
+
+

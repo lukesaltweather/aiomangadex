@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aiomangadex.aiomangadex &#8212; aiomangadex 2020-06-14 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-aiomangadex.aiomangadex">
+<span id="aiomangadex-aiomangadex"></span><h1><a class="reference internal" href="#module-aiomangadex.aiomangadex" title="aiomangadex.aiomangadex"><code class="xref py py-mod docutils literal notranslate"><span class="pre">aiomangadex.aiomangadex</span></code></a><a class="headerlink" href="#module-aiomangadex.aiomangadex" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#aiomangadex.aiomangadex.Manga" title="aiomangadex.aiomangadex.Manga"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Manga</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#aiomangadex.aiomangadex.fetch_manga" title="aiomangadex.aiomangadex.fetch_manga"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_manga</span></code></a>(manga_id: int, session: aiohttp.ClientSession = None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#aiomangadex.aiomangadex.fetch_chapter" title="aiomangadex.aiomangadex.fetch_chapter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fetch_chapter</span></code></a>(chapter_id: int, session: aiohttp.ClientSession = None)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="aiomangadex.aiomangadex.Manga">
+<em class="property">class </em><code class="sig-prename descclassname">aiomangadex.aiomangadex.</code><code class="sig-name descname">Manga</code><a class="headerlink" href="#aiomangadex.aiomangadex.Manga" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.id">
+<code class="sig-name descname">id</code><em class="property"> :int</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.cover_url">
+<code class="sig-name descname">cover_url</code><em class="property"> :str</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.cover_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.description">
+<code class="sig-name descname">description</code><em class="property"> :str</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.rating">
+<code class="sig-name descname">rating</code><em class="property"> :dict</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.rating" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.alt_names">
+<code class="sig-name descname">alt_names</code><em class="property"> :list</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.alt_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.title">
+<code class="sig-name descname">title</code><em class="property"> :str</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.artist">
+<code class="sig-name descname">artist</code><em class="property"> :str</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.artist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.author">
+<code class="sig-name descname">author</code><em class="property"> :str</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.author" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.status">
+<code class="sig-name descname">status</code><em class="property"> :int</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.genres">
+<code class="sig-name descname">genres</code><em class="property"> :list</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.genres" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.last_chapter">
+<code class="sig-name descname">last_chapter</code><em class="property"> :int</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.last_chapter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.lang_name">
+<code class="sig-name descname">lang_name</code><em class="property"> :str</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.lang_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.lang_flag">
+<code class="sig-name descname">lang_flag</code><em class="property"> :str</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.lang_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.hentai">
+<code class="sig-name descname">hentai</code><em class="property"> :bool</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.hentai" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.links">
+<code class="sig-name descname">links</code><em class="property"> :dict</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.chapters">
+<code class="sig-name descname">chapters</code><em class="property"> :ChapterList</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.chapters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga.session">
+<code class="sig-name descname">session</code><em class="property"> :aiohttp.ClientSession</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="aiomangadex.aiomangadex.Manga._user_session">
+<code class="sig-name descname">_user_session</code><em class="property"> :bool = False</em><a class="headerlink" href="#aiomangadex.aiomangadex.Manga._user_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="aiomangadex.aiomangadex.Manga.close_session">
+<em class="property">async </em><code class="sig-name descname">close_session</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.close_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="aiomangadex.aiomangadex.Manga.__del__">
+<code class="sig-name descname">__del__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiomangadex.aiomangadex.Manga.__del__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="aiomangadex.aiomangadex.fetch_manga">
+<em class="property">async </em><code class="sig-prename descclassname">aiomangadex.aiomangadex.</code><code class="sig-name descname">fetch_manga</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">manga_id</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">session</span><span class="p">:</span> <span class="n">aiohttp.ClientSession</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Manga<a class="headerlink" href="#aiomangadex.aiomangadex.fetch_manga" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="aiomangadex.aiomangadex.fetch_chapter">
+<em class="property">async </em><code class="sig-prename descclassname">aiomangadex.aiomangadex.</code><code class="sig-name descname">fetch_chapter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">chapter_id</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">session</span><span class="p">:</span> <span class="n">aiohttp.ClientSession</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Chapter<a class="headerlink" href="#aiomangadex.aiomangadex.fetch_chapter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">aiomangadex</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, lukesaltweather.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/autoapi/aiomangadex/aiomangadex/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -55,3 +55,6 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 
 master_doc = 'index'
+
+extensions = ['autoapi.extension']
+autoapi_dirs = ['../aiomangadex']
