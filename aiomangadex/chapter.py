@@ -24,7 +24,32 @@ async def download_file(session: aiohttp.ClientSession, url: str) -> io.BytesIO:
 
 @dataclass
 class Chapter:
-    """ A class that matches the chapter endpoint.
+    """Representation of the chapter model
+
+    Attributes:
+        id (int): ID of the chapter
+        manga_id (int): ID of the chapter's manga
+        volume (int): Which volume the chapter is in
+        hash (str): Chapter hash used in the img links
+        chapter (float): Chapter Number
+        title (str): Chapter Title
+        lang_code (str): Language of the translation
+        lang_name (str): Language of the translation
+        group_id (int): Scanlation Group 1
+        group_name (str): Scanlation Group 1
+        group_id_2 (int): Scanlation Group
+        group_name_2 (str): Scanlation Group
+        group_id_3 (int): Scanlation Group
+        group_name_3 (str): Scanlation Group
+        timestamp (int): 
+        comments (int): Amount of comments
+        server (str): Server chapter is hosted on, used for the img urls
+        page_array (List[str]): Array with links to the pages
+        long_strip (bool): Whether Chapter is in strip format
+        status (str): Status
+        links (List[str]): | Links to the pages.
+            | *This is not provided by the api, but put together by the library.*
+        session (aiohttp.ClientSession): The session passed initially, or the one created by the library if *None* was passed.
     """
     id: int = None
     manga_id: int = None

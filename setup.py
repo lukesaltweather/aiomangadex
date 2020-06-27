@@ -18,7 +18,7 @@ setup(
     author="lukesaltweather",
     author_email="lukesaltweather@gmail.com",
     license="Apache License 2.0",
-    classifiers=[
+    classifiers=[!
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
