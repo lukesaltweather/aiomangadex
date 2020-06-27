@@ -1,1 +1,1 @@
-aiomangadex >= 0.3
+aiohttp
