@@ -9,7 +9,12 @@ The following sections lines out the Manga class, as well as how to fetch one fr
 
 Manga
 ------
-.. autoclass:: aiomangadex.Manga
+.. autoclass:: aiomangadex.Manga()
+    :members:
+
+Chapter
+-------
+.. autoclass:: aiomangadex.Chapter()
     :members:
 
 Fetching
