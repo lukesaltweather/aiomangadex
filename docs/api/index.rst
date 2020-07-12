@@ -17,6 +17,11 @@ Chapter
 .. autoclass:: aiomangadex.Chapter()
     :members:
 
+ChapterList
+-----------
+.. autoclass:: aiomangadex.ChapterList()
+    :members:
+
 Fetching
 ----------
 
