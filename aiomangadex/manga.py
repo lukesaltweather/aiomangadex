@@ -11,6 +11,25 @@ from aiomangadex.chapter import Chapter, ChapterList
 class Manga:
     """Represents part of result of https://mangadex.org/api/manga/{id}
 
+    Attributes:
+        id ( int ): Manga id
+        cover_url ( string ): URL to manga cover
+        description ( str )
+        rating ( dict)
+        alt_names ( List[ str ] )
+        title ( str )
+        artist ( str )
+        author ( str )
+        status ( int )
+        genres ( List[ str ] )
+        last_chapter ( int )
+        lang_name ( str )
+        lang_flag ( str )
+        hentai ( bool )
+        links ( dict )
+        chapters ( ChapterList )
+        session ( aiohttp.ClientSession )
+
 .. note::
     Some of the chapter data is *not* included in the initial fetch, meaning you'll have to fetch the missing things in :class:`aiomangadex.Chapter`.
     """
@@ -41,7 +60,15 @@ class Manga:
             asyncio.create_task(self.session.close())
 
 async def fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> Manga:
+    """
+    Used to fetch a manga object by id.
+    Args:
+        manga_id ( int ): manga id, as in the url
+        session ( Optional[ aiohttp.ClientSession ] ): It is recommended to create your own Session, especially if you intend to fetch more than one manga.
 
+    Returns:
+        manga ( Manga ): Manga Instance
+    """
     if session is not None:
         user_session = True
         async with session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
