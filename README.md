@@ -1,6 +1,7 @@
 # aiomangadex
 
 [![Build Status](https://travis-ci.org/lukesaltweather/aiomangadex.svg?branch=master)](https://travis-ci.org/lukesaltweather/aiomangadex)
+[![Documentation Status](https://readthedocs.org/projects/aiomangadex/badge/?version=latest)](https://aiomangadex.readthedocs.io/en/latest/?badge=latest)
 
 An asynchronous API wrapper for mangadex.
 
