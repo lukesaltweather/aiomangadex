@@ -1,7 +1,7 @@
 .. currentmodule:: aiomangadex.aiomangadex
 
-Manga
-=======
+API Reference
+=============
 
 The following sections lines out the Manga class, as well as how to fetch one from the API.
 
@@ -21,3 +21,5 @@ Fetching
 ----------
 
 .. autofunction:: aiomangadex.fetch_manga
+
+.. autofunction:: aiomangadex.fetch_chapter
