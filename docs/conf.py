@@ -60,10 +60,6 @@ html_static_path = ['_static']
 
 master_doc = 'index'
 
-html_css_files = [
-    'custom.css',
-]
-
 extensions = [
     "pallets_sphinx_themes",'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.intersphinx'
 ]
