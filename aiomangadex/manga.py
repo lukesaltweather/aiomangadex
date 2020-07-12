@@ -30,8 +30,8 @@ class Manga:
         chapters ( ChapterList )
         session ( aiohttp.ClientSession )
 
-.. note::
-    Some of the chapter data is *not* included in the initial fetch, meaning you'll have to fetch the missing things in :class:`aiomangadex.Chapter`.
+    Warnings:
+        Some of the chapter data is *not* included in the initial fetch, meaning you'll have to fetch the missing things in :class:`aiomangadex.Chapter`.
     """
     id: int
     cover_url: str
@@ -67,7 +67,7 @@ async def fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> M
         session ( Optional[ aiohttp.ClientSession ] ): It is recommended to create your own Session, especially if you intend to fetch more than one manga.
 
     Returns:
-        manga ( Manga ): Manga Instance
+        manga ( aiomangadex.Manga ): Manga Instance
     """
     if session is not None:
         user_session = True
