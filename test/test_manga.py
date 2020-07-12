@@ -16,7 +16,7 @@ class MockClientSessionGet:
 
 @pytest.fixture
 def mock_get(monkeypatch):
-    with open('34198.json', 'r') as f:
+    with open('test/34198.json', 'r') as f:
         jm = json.load(f)
     def new_get(*args, **kwargs):
         return MockClientSessionGet(jm)
