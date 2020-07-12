@@ -1,7 +1,7 @@
 class Language:
     """ A class with a bunch of class methods to aid with finding a chapter in the desired language.
     """
-    def __init__(self, code, scdry):
+    def __init__(self, code, scdry=None):
         self._lang_code = code
         self._scdry = scdry
 
