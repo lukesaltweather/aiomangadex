@@ -1,4 +1,5 @@
 import asyncio
+import json
 from dataclasses import dataclass
 import aiohttp
 from typing import List, Union
@@ -11,7 +12,7 @@ class Manga:
     """Represents part of result of https://mangadex.org/api/manga/{id}
 
 .. note::
-    Some of the chapter data is *not* included in the initial fetch, meaning you'll have to fetch the missing things in the :class:`aiomangadex.Chapter`.
+    Some of the chapter data is *not* included in the initial fetch, meaning you'll have to fetch the missing things in :class:`aiomangadex.Chapter`.
     """
     id: int
     cover_url: str
@@ -40,23 +41,14 @@ class Manga:
             asyncio.create_task(self.session.close())
 
 async def fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> Manga:
-    """Function used for fetching a manga by id. If no session is provided, the library will create one per manga fetched.
-    It is recommended to reuse the aiohttp ClientSession instances.
 
-    :param manga_id: Manga to fetch
-    :type manga_id: int
-    :param session: defaults to None
-    :type session: aiohttp.ClientSession, optional
-    :return:  A Manga instance with some chapter data.
-    :rtype: Manga
-    """
     if session is not None:
         user_session = True
         async with session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
             response = await resp.json()
     else:
         user_session = False
-        session = aiohttp.ClientSession(json_serialize=ujson.dumps)
+        session = aiohttp.ClientSession(json_serialize=json.dumps)
         async with session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
             response = await resp.json()
     chapters = []
@@ -64,13 +56,3 @@ async def fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> M
         chapters.append(Chapter(id=key, **dict(value), session=session, _user_session=True))
     chapters.reverse()
     return Manga(**dict(response.get('manga')), chapters=ChapterList(chapters), id=manga_id, session=session, _user_session=user_session)
-
-async def fetch_chapter(chapter_id: int, session: aiohttp.ClientSession = None) -> Chapter:
-    if session is not None:
-        async with session.get(f'https://mangadex.org/api/chapter/{chapter_id}') as resp:
-            response = await resp.json()
-        return Chapter(**response, _user_session=True, session=session)
-    session = aiohttp.ClientSession(json_serialize=ujson.dumps)
-    async with session.get(f'https://mangadex.org/api/chapter/{chapter_id}') as resp:
-        response = await resp.json()
-    return Chapter(**response, _user_session=False, session=session)
