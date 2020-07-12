@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../'))
 
 
 # -- Project information -----------------------------------------------------
@@ -47,15 +47,24 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'flask'
 
 # Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
+# relative to this directory. They are copied after the builtin static files
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# html_css_files = [
+#     'override.css',
+# ]
 
 master_doc = 'index'
 
 extensions = [
-    'sphinx.ext.autodoc'
+    "pallets_sphinx_themes",'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.intersphinx'
 ]
+
+intersphinx_mapping = {
+  'py': ('https://docs.python.org/3', None),
+  'aio': ('https://aiohttp.readthedocs.io/en/stable/', None)
+}

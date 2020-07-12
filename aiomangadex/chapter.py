@@ -1,3 +1,5 @@
+import json
+
 import aiohttp
 import difflib
 import io
@@ -7,7 +9,7 @@ from aiomangadex.language import Language
 from dataclasses import dataclass
 from typing import List, Union
 
-async def download_file(session: aiohttp.ClientSession, url: str) -> io.BytesIO:
+async def _download_file(session: aiohttp.ClientSession, url: str) -> io.BytesIO:
     """Helper function for downloading.
 
     Args:
@@ -24,7 +26,36 @@ async def download_file(session: aiohttp.ClientSession, url: str) -> io.BytesIO:
 
 @dataclass
 class Chapter:
-    """ A class that matches the chapter endpoint.
+    """Representation of the chapter model
+
+    Attributes:
+        id (int): ID of the chapter
+        manga_id (int): ID of the chapter's manga
+        volume (int): Which volume the chapter is in
+        hash (str): Chapter hash used in the img links
+        chapter (float): Chapter Number
+        title (str): Chapter Title
+        lang_code (str): Language of the translation
+        lang_name (str): Language of the translation
+        group_id (int): Scanlation Group 1
+        group_name (str): Scanlation Group 1
+        group_id_2 (int): Scanlation Group
+        group_name_2 (str): Scanlation Group
+        group_id_3 (int): Scanlation Group
+        group_name_3 (str): Scanlation Group
+        timestamp (int): 
+        comments (int): Amount of comments
+        server (str): Server chapter is hosted on, used for the img urls
+        page_array (List[str]): Array with links to the pages
+        long_strip (bool): Whether Chapter is in strip format
+        status (str): Status
+        links (List[str]): | Links to the pages.
+            | *This is not provided by the api, but put together by the library.*
+        session (aiohttp.ClientSession): The session passed initially, or the one created by the library if *None* was passed.
+    Warnings:
+        If this wasn't fetched through :meth:`fetch_chapter` it is missing some information coming from another API endpoint, like the links to the pages.
+        This is fetched automatically if you use :meth:`download_pages() <Chapter.download_page>` or :meth:`download_all_pages() <Chapter.download_all_pages>`.
+        To just fetch the missing data, use :meth:`fetch_pages()`
     """
     id: int = None
     manga_id: int = None
@@ -50,7 +81,7 @@ class Chapter:
     session: aiohttp.ClientSession = None
     _user_session: bool = False
 
-    async def download_page(self, page: int, data_saver: bool=True) -> io.BytesIO:
+    async def download_page(self, page: int, data_saver: bool=True):
         """
 
         Args:
@@ -67,12 +98,24 @@ class Chapter:
         async with self.session.get(link) as resp:
             return io.BytesIO(await resp.read())
 
-    async def download_all_pages(self, data_saver: bool=True) -> List[io.BytesIO]:
+    async def download_all_pages(self, data_saver: bool=True):
+        """
+        Used to download all pages.
+
+        Warnings:
+            Fast because it runs all download simultaneously. Keep this in mind if you use it often, as you might get banned.
+
+        Args:
+            data_saver (bool): Whether to use the data-saver obtion or not.
+
+        Returns:
+            List [ io.BytesIO ]: List of downloaded pages.
+        """
         if self.links is None:
             links = (await self.fetch_pages(data_saver))
         else:
             links = self.links
-        download_futures = [download_file(self.session, url) for url in links]
+        download_futures = [_download_file(self.session, url) for url in links]
         return await asyncio.gather(*download_futures)
 
     async def fetch_pages(self, data_saver: bool=True) -> List[str]:
@@ -172,3 +215,21 @@ class ChapterList:
 
     def __len__(self):
         return len(self._chapters)
+
+async def fetch_chapter(chapter_id: int, session: aiohttp.ClientSession = None):
+    """
+    Args:
+        chapter_id ( int ): hh
+        session ( :class:`int` ): hi
+
+    Returns:
+        Chapter: Chapter
+    """
+    if session is not None:
+        async with session.get(f'https://mangadex.org/api/chapter/{chapter_id}') as resp:
+            response = await resp.json()
+        return Chapter(**response, _user_session=True, session=session)
+    session = aiohttp.ClientSession(json_serialize=json.dumps)
+    async with session.get(f'https://mangadex.org/api/chapter/{chapter_id}') as resp:
+        response = await resp.json()
+    return Chapter(**response, _user_session=False, session=session)
