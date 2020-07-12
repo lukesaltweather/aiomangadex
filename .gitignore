@@ -3,3 +3,5 @@
 language.cpython-38.pyc
 /aiomangadex/__pycache__/chapter.cpython-38.pyc
 .idea/
+build/
+dist/

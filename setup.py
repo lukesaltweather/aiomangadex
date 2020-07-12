@@ -22,7 +22,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         'License :: OSI Approved :: Apache Software License',
-        'Development Status :: 5 - Stable'
+        'Development Status :: 4 - Beta'
     ],
     packages=["aiomangadex"],
     include_package_data=True,
