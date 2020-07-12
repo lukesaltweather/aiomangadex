@@ -1,2 +1,5 @@
 /MANIFEST
 /dist/aiomangadex-0.1.0.tar.gz
+.idea/
+build/
+dist/
