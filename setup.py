@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="aiomangadex",
-    version="0.3.0",
+    version="1.0.0",
     description="A simple asynchronous API wrapper for mangadex.org.",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -18,11 +18,12 @@ setup(
     author="lukesaltweather",
     author_email="lukesaltweather@gmail.com",
     license="Apache License 2.0",
+    requires="Python >= 3.7",
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         'License :: OSI Approved :: Apache Software License',
-        'Development Status :: 3 - Alpha'
+        'Development Status :: 5 - Stable'
     ],
     packages=["aiomangadex"],
     include_package_data=True,
