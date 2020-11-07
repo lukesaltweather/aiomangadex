@@ -1,11 +1,16 @@
 import asyncio
-import json
-from dataclasses import dataclass
-import aiohttp
-from typing import List, Union
-import io
 import difflib
+import io
+import json
+
+import aiohttp
+
+from dataclasses import dataclass
+from typing import List, Union
+
 from aiomangadex.chapter import Chapter, ChapterList
+from aiomangadex.session import _session
+
 
 @dataclass(frozen=True)
 class Manga:
@@ -37,6 +42,9 @@ class Manga:
     cover_url: str
     description: str
     rating: dict
+    demographic: int
+    last_volume: int
+    last_updated: int
     alt_names: list
     title : str
     artist: str
@@ -48,38 +56,27 @@ class Manga:
     lang_flag: str
     hentai: bool
     links: dict
+    related: List
+    views: int
+    follows: int
+    covers: List[str]
+    comments: int
     chapters: ChapterList
     session: aiohttp.ClientSession = None
-    _user_session: bool = False
 
-    async def close_session(self):
-        await self.session.close()
-
-    def __del__(self):
-        if not self._user_session:
-            asyncio.create_task(self.session.close())
-
-async def fetch_manga(manga_id: int, session: aiohttp.ClientSession = None) -> Manga:
+async def fetch_manga(manga_id: int) -> Manga:
     """
     Used to fetch a manga object by id.
     Args:
         manga_id ( int ): manga id, as in the url
-        session ( Optional[ aiohttp.ClientSession ] ): It is recommended to create your own Session, especially if you intend to fetch more than one manga.
 
     Returns:
         manga ( aiomangadex.Manga ): Manga Instance
     """
-    if session is not None:
-        user_session = True
-        async with session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
-            response = await resp.json()
-    else:
-        user_session = False
-        session = aiohttp.ClientSession(json_serialize=json.dumps)
-        async with session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
-            response = await resp.json()
+    async with _session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
+        response = await resp.json()
     chapters = []
     for key, value in response.get('chapter').items():
-        chapters.append(Chapter(id=key, **dict(value), session=session, _user_session=True))
+        chapters.append(Chapter(id=key, **dict(value), session=_session))
     chapters.reverse()
-    return Manga(**dict(response.get('manga')), chapters=ChapterList(chapters), id=manga_id, session=session, _user_session=user_session)
+    return Manga(**dict(response.get('manga')), chapters=ChapterList(chapters), id=manga_id, session=_session)

@@ -6,13 +6,17 @@ class Language:
         self._scdry = scdry
 
     def __eq__(self, other):
-        if other in [self._lang_code, self._scdry]:
+        if other in (self._lang_code, self._scdry):
             return True
         return False
 
     @classmethod
     def English(cls):
         return cls('gb')
+
+    @classmethod
+    def NoLang(cls):
+        return cls('')
 
     @classmethod
     def German(cls):
