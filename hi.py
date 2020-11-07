@@ -4,7 +4,7 @@ import aiohttp
 
 async def create_session():
     session = aiohttp.ClientSession()
-    cl = session.MangadexClient(session, asyncio.get_event_loop(), username="lukesaltweather", password="Andi3579")
+    cl = session.MangadexClient(session, asyncio.get_event_loop())
     await cl.wait_until_ready()
     chps = await cl.get_manga(34198, include_partial_chapters=True)
     print(chps)
