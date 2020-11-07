@@ -6,6 +6,8 @@ import io
 import asyncio
 
 from aiomangadex.language import Language
+from aiomangadex.partialchapter import PartialChapter
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import List, Union
 
@@ -21,11 +23,10 @@ async def _download_file(session: aiohttp.ClientSession, url: str) -> io.BytesIO
     """
     async with session.get(url) as response:
         assert response.status == 200
-        # For large files use response.content.read(chunk_size) instead.
         return io.BytesIO(await response.read())
 
 @dataclass
-class Chapter:
+class Chapter(PartialChapter):
     """Representation of the chapter model
 
     Attributes:
@@ -78,8 +79,7 @@ class Chapter:
     long_strip: bool = None
     status: str = None
     links: List[str] = None
-    session: aiohttp.ClientSession = None
-    _user_session: bool = False
+    http = None
 
     async def download_page(self, page: int, data_saver: bool=True):
         """
@@ -92,31 +92,32 @@ class Chapter:
             io.BytesIO: A buffer with the image.
         """
         if self.links is None:
-            link = (await self.fetch_pages(data_saver))[page]
-        else:
-            link = self.links[page]
+            await self.fetch_pages(data_saver)
+        link = self.links[page]
         async with self.session.get(link) as resp:
             return io.BytesIO(await resp.read())
 
-    async def download_all_pages(self, data_saver: bool=True):
+    def download_all_pages(self, data_saver: bool=True):
         """
-        Used to download all pages.
+        Return a (async) generator to download all pages.
 
         Warnings:
             Fast because it runs all download simultaneously. Keep this in mind if you use it often, as you might get banned.
 
         Args:
-            data_saver (bool): Whether to use the data-saver obtion or not.
+            data_saver (bool): Whether to use the data-saver option or not.
 
         Returns:
-            List [ io.BytesIO ]: List of downloaded pages.
+            AsyncGenerator [ io.BytesIO ]: Generator with downloaded pages.
         """
-        if self.links is None:
-            links = (await self.fetch_pages(data_saver))
-        else:
-            links = self.links
-        download_futures = [_download_file(self.session, url) for url in links]
-        return await asyncio.gather(*download_futures)
+        async def generator():
+            if self.links is None:
+                await self.fetch_pages(data_saver)
+            futures = [_download_file(self.session, url) for url in self.links]
+            for future in futures:
+                yield await future
+        return generator()
+        #   return await asyncio.gather(*download_futures)
 
     async def fetch_pages(self, data_saver: bool=True) -> List[str]:
         d = "data-saver" if data_saver else "data"
@@ -135,11 +136,7 @@ class Chapter:
             setattr(self, key, value)
 
 
-    def __del__(self):
-        if not self._user_session:
-            asyncio.create_task(self.session.close())
-
-class ChapterList:
+class ChapterList(Sequence):
     """ A class used for managing and filtering a Manga Instance's chapters.
     """
     def __init__(self, chapters: List[Chapter]):
@@ -147,6 +144,9 @@ class ChapterList:
 
     def __getitem__(self, i):
         return self._chapters[i]
+
+    def __len__(self):
+        return len(self._chapters)
 
     def _append(self, element: Chapter):
         self._chapters.append(element)
@@ -161,11 +161,7 @@ class ChapterList:
         """
         if not isinstance(lang, Language):
             lang = Language(lang)
-        chapters = []
-        for chapter in self._chapters:
-            if chapter.lang_code in lang:
-                chapters.append(chapter)
-        return ChapterList(chapters)
+        return ChapterList([chapter for chapter in self._chapters if chapter.lang_code == lang])
         
     def filter_title(self, *titles, difference_cutoff: float = 0.8) -> 'ChapterList':
         """Filter by titles, connected by logical OR.
@@ -193,11 +189,7 @@ class ChapterList:
         Returns:
             ChapterList
         """
-        li = []
-        for chapter in self._chapters:
-            if float(chapter.chapter) in numbers:
-                li.append(chapter)
-        return ChapterList(li)
+        return ChapterList([chapter for chapter in self._chapters if float(chapter.chapter) in numbers])
 
     def filter_id(self, *ids: List[int]) -> 'ChapterList':
         """
@@ -207,16 +199,10 @@ class ChapterList:
         Returns:
             ChapterList
         """
-        li = []
-        for chapter in self._chapters:
-            if float(chapter.id) in ids:
-                li.append(chapter)
-        return ChapterList(li)
+        return ChapterList([chapter for chapter in self._chapters if float(chapter.id) in ids])
 
-    def __len__(self):
-        return len(self._chapters)
 
-async def fetch_chapter(chapter_id: int, session: aiohttp.ClientSession = None):
+async def fetch_chapter(chapter_id: int):
     """
     Args:
         chapter_id ( int ): hh
@@ -225,11 +211,6 @@ async def fetch_chapter(chapter_id: int, session: aiohttp.ClientSession = None):
     Returns:
         Chapter: Chapter
     """
-    if session is not None:
-        async with session.get(f'https://mangadex.org/api/chapter/{chapter_id}') as resp:
-            response = await resp.json()
-        return Chapter(**response, _user_session=True, session=session)
-    session = aiohttp.ClientSession(json_serialize=json.dumps)
-    async with session.get(f'https://mangadex.org/api/chapter/{chapter_id}') as resp:
+    async with _session.get(f'https://mangadex.org/api/chapter/{chapter_id}') as resp:
         response = await resp.json()
-    return Chapter(**response, _user_session=False, session=session)
+    return Chapter(**response, session=_session)
