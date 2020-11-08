@@ -1,8 +1,11 @@
 from dataclasses import dataclass
 
-@dataclass
+from .session import MangadexSession
+
+@dataclass(frozen=True)
 class MangadexBase:
     id: int = None
+    http: MangadexSession = None
 
     @classmethod
     def from_json(cls, json):
