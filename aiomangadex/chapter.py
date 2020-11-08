@@ -25,7 +25,7 @@ async def _download_file(session: aiohttp.ClientSession, url: str) -> io.BytesIO
         assert response.status == 200
         return io.BytesIO(await response.read())
 
-@dataclass
+@dataclass(frozen=True)
 class Chapter(PartialChapter):
     """Representation of the chapter model
 
@@ -58,28 +58,17 @@ class Chapter(PartialChapter):
         This is fetched automatically if you use :meth:`download_pages() <Chapter.download_page>` or :meth:`download_all_pages() <Chapter.download_all_pages>`.
         To just fetch the missing data, use :meth:`fetch_pages()`
     """
-    id: int = None
-    manga_id: int = None
-    volume: int = None
-    hash: str = None
-    chapter: float = None
-    title: str = None
-    lang_code: str = None
-    lang_name: str = None
     group_id: int = None
-    group_name: str = None
+    group_nae: str = None
     group_id_2: int = None
     group_name_2: str = None
     group_id_3: int = None
     group_name_3: str = None
-    timestamp: int = None
-    comments: int = None
     server: str = None
     page_array: List[str] = None
     long_strip: bool = None
     status: str = None
     links: List[str] = None
-    http = None
 
     async def download_page(self, page: int, data_saver: bool=True):
         """
@@ -134,83 +123,3 @@ class Chapter(PartialChapter):
             resp = await r.json()
         for key, value in resp.items():
             setattr(self, key, value)
-
-
-class ChapterList(Sequence):
-    """ A class used for managing and filtering a Manga Instance's chapters.
-    """
-    def __init__(self, chapters: List[Chapter]):
-        self._chapters = chapters
-
-    def __getitem__(self, i):
-        return self._chapters[i]
-
-    def __len__(self):
-        return len(self._chapters)
-
-    def _append(self, element: Chapter):
-        self._chapters.append(element)
-        return self._chapters
-
-    def filter_language(self, *lang: Union[Language, str]) -> 'ChapterList':
-        """Filter by languages, connected by logical OR.
-        Returns a ChapterList of the chapters with corresponding languages.
-
-        Returns:
-            ChapterList
-        """
-        if not isinstance(lang, Language):
-            lang = Language(lang)
-        return ChapterList([chapter for chapter in self._chapters if chapter.lang_code == lang])
-        
-    def filter_title(self, *titles, difference_cutoff: float = 0.8) -> 'ChapterList':
-        """Filter by titles, connected by logical OR.
-        Returns a ChapterList of the chapters with corresponding titles.
-
-        Returns:
-            ChapterList
-        """
-        chapters = list()
-        tit = [chapter.title for chapter in self._chapters]
-        results = list()
-        for t in titles:
-            results.append(difflib.get_close_matches(t, tit, cutoff=difference_cutoff))
-
-        for chapter in self._chapters:
-            if chapter.title in results:
-                chapters.append(chapter)
-        
-        return ChapterList(chapters)
-
-    def filter_chapter_number(self, *numbers: List[int]) -> 'ChapterList':
-        """Filter by chapter number, connected by logical OR.
-        Returns a ChapterList of the chapters with according chapter numbers.
-
-        Returns:
-            ChapterList
-        """
-        return ChapterList([chapter for chapter in self._chapters if float(chapter.chapter) in numbers])
-
-    def filter_id(self, *ids: List[int]) -> 'ChapterList':
-        """
-        Filter by id, connected by logical OR.
-        Returns ChapterList of chapters with corresponding ids.
-
-        Returns:
-            ChapterList
-        """
-        return ChapterList([chapter for chapter in self._chapters if float(chapter.id) in ids])
-
-
-async def fetch_chapter(chapter_id: int):
-    """
-    Args:
-        chapter_id ( int ): hh
-        session ( :class:`int` ): hi
-
-    Returns:
-        Chapter: Chapter
-    """
-    async with _session.get(f'https://mangadex.org/api/chapter/{chapter_id}') as resp:
-        response = await resp.json()
-    return Chapter(**response, session=_session)
