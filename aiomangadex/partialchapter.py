@@ -6,7 +6,7 @@ from .base import MangadexBase
 from .group import Group
 from .language import Language
 
-@dataclass
+@dataclass(frozen=True)
 class PartialChapter(MangadexBase):
     id: int = None
     hash: str = None
@@ -16,16 +16,11 @@ class PartialChapter(MangadexBase):
     title: str = None
     groups: List[Group] = field(default_factory=list)
     language: Language = Language.NoLang()
-    timestamp: datetime = 0
+    timestamp: datetime = None
     comments: int = 0
-
-    def __post_init__(self):
-        self.timestamp = datetime.fromtimestamp(self.timestamp)
 
     def __hash__(self):
         return self.hash
-
-
 
 class ChapterMixin:
     pass
