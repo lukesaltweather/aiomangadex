@@ -8,61 +8,37 @@ import aiohttp
 from dataclasses import dataclass
 from typing import List, Union
 
-from aiomangadex.chapter import Chapter, ChapterList
-from aiomangadex.session import _session
+from .chapter import Chapter, ChapterList
+from .base import MangadexBase
 
 
 @dataclass(frozen=True)
-class Manga:
-    """Represents part of result of https://mangadex.org/api/manga/{id}
+class Manga(MangadexBase):
 
-    Attributes:
-        id ( int ): Manga id
-        cover_url ( string ): URL to manga cover
-        description ( str )
-        rating ( dict)
-        alt_names ( List[ str ] )
-        title ( str )
-        artist ( str )
-        author ( str )
-        status ( int )
-        genres ( List[ str ] )
-        last_chapter ( int )
-        lang_name ( str )
-        lang_flag ( str )
-        hentai ( bool )
-        links ( dict )
-        chapters ( ChapterList )
-        session ( aiohttp.ClientSession )
-
-    Warnings:
-        Some of the chapter data is *not* included in the initial fetch, meaning you'll have to fetch the missing things in :class:`aiomangadex.Chapter`.
-    """
-    id: int
-    cover_url: str
-    description: str
-    rating: dict
-    demographic: int
-    last_volume: int
-    last_updated: int
-    alt_names: list
-    title : str
-    artist: str
-    author: str
-    status: int
-    genres: list
-    last_chapter: int
-    lang_name: str
-    lang_flag: str
-    hentai: bool
-    links: dict
-    related: List
-    views: int
-    follows: int
-    covers: List[str]
-    comments: int
-    chapters: ChapterList
-    session: aiohttp.ClientSession = None
+    id: int = None
+    cover_url: str = None
+    description: str = None
+    rating: dict = None
+    demographic: int = None
+    last_volume: int = None
+    last_updated: int = None
+    alt_names: list = None
+    title : str = None
+    artist: str = None
+    author: str = None
+    status: int = None
+    genres: list = None
+    last_chapter: int = None
+    lang_name: str = None
+    lang_flag: str = None
+    hentai: bool = None
+    links: dict = None
+    related: List = None
+    views: int = None
+    follows: int = None
+    covers: List[str] = None
+    comments: int = None
+    chapters: ChapterList = None
 
 async def fetch_manga(manga_id: int) -> Manga:
     """
