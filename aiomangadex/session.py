@@ -64,8 +64,9 @@ class MangadexSession:
         async with self._lock:
             async with self._session.request(route.method, route.url, headers=route.headers, data=route.data) as resp:
                 data = await resp.json()
-            if data['code'] in (200,):
+            if data['code'] == 200:
                 return data['data']
+            raise HttpException(code=data['code'])
 
     async def _login(self, *, user, password):
         route = "https://mangadex.org/ajax/actions.ajax.php?function=login"
@@ -104,26 +105,31 @@ class MangadexSession:
     def get_user_followed_manga(self, user_id: typing.Union[int, str] = "me"):
         return self._request(Route("GET", f"user/{user_id}/followed-manga"))
 
-    def get_user_chapters(self):
-        pass
+    def get_user_chapters(self, user_id = 'me', page = 0, limit = 100):
+        #auth
+        return self._request(Route("GET", f"user/{user_id}/chapters", p=page, limit=limit))
 
-    def get_user_settings(self):
-        pass
+    def get_user_settings(self, user_id = 'me'):
+        #auth
+        return self._request(Route("GET", f"user/{user_id}/settings"))
 
-    def get_user_followed_updates(self):
-        pass
+    def get_user_followed_updates(self, user_id = 'me', page = 1, type = 0, hentai = 0, delayed = False):
+        #auth
+        return self._request(Route("GET", f"user/{user_id}/followed-updates", p=page, type=type, hentai=hentai, delayed=delayed))
 
-    def get_user_ratings(self):
-        pass
+    def get_user_ratings(self, user_id):
+        #auth
+        return self._request(Route("GET", f"user/{user_id}/ratings"))
 
-    def get_user_manga_info(self):
-        pass
+    def get_user_manga_info(self, user_id, manga_id):
+        #auth
+        return self._request(Route("GET", f"user/{user_id}/manga/{manga_id}"))
 
     def get_all_tags(self):
-        pass
+        return self._request(Route("GET", f"tag"))
 
-    def get_tag(self):
-        pass
+    def get_tag(self, tag_id):
+        return self._request(Route("GET", f"tag/{tag_id}"))
 
     def set_marker(self, chapter: typing.List[int], set_to: bool = True):
         return self._request(Route("POST", "user/me/marker", {"Content-Type": "application/json"}, read=set_to, body = json.dumps(chapter)))

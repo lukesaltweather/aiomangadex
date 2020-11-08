@@ -2,6 +2,7 @@
 /dist/aiomangadex-0.1.0.tar.gz
 language.cpython-38.pyc
 /aiomangadex/__pycache__/chapter.cpython-38.pyc
+hi.py
 .idea/
 build/
 dist/
