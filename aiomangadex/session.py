@@ -7,6 +7,33 @@ import aiohttp
 
 from urllib.parse import quote as _uriquote
 
+from .exceptions import HttpException
+
+class AsyncLeakyBucket:
+
+    def __init__(self, max_tasks: int, time_period: float = 60, loop: asyncio.events=None):
+        self._delay_time = time_period / max_tasks
+        self._sem = asyncio.BoundedSemaphore(max_tasks)
+        self._loop = loop or asyncio.get_event_loop()
+        self._loop.create_task(self._leak_sem())
+
+    async def _leak_sem(self):
+        """
+        Background task that leaks semaphore releases based on the desired rate of tasks per time_period
+        """
+        while True:
+            await asyncio.sleep(self._delay_time)
+            try:
+                self._sem.release()
+            except ValueError:
+                pass
+
+    async def __aenter__(self) -> None:
+        await self._sem.acquire()
+
+    async def __aexit__(self, exc_type, exc, tb) -> None:
+        pass
+
 class Route:
     BASE = 'https://mangadex.org/api/v2/'
 
@@ -25,18 +52,20 @@ class Route:
             self.url = url
 
 class MangadexSession:
-    def __init__(self, session=None, loop=None, *, username = None, password = None):
+    def __init__(self, session=None, loop=None, login: bool = False, *, username = None, password = None):
         self._loop = loop or asyncio.get_running_loop()
         self._session: aiohttp.ClientSession = session or aiohttp.ClientSession()
         self._ready = asyncio.Semaphore(0)
-        self._loop.create_task(self._login(user=username, password=password))
+        self._lock = AsyncLeakyBucket(1, 1.0)
+        if login:
+            self._loop.create_task(self._login(user=username, password=password))
 
     async def _request(self, route: Route):
-        # handle Ratelimits
-        async with self._session.request(route.method, route.url, headers=route.headers, data=route.data) as resp:
-            data = await resp.json()
-        if data['code'] in (200,):
-            return data['data']
+        async with self._lock:
+            async with self._session.request(route.method, route.url, headers=route.headers, data=route.data) as resp:
+                data = await resp.json()
+            if data['code'] in (200,):
+                return data['data']
 
     async def _login(self, *, user, password):
         route = "https://mangadex.org/ajax/actions.ajax.php?function=login"
@@ -113,7 +142,7 @@ class MangadexSession:
         data.add_field('group_id_2', group_id_2)
         data.add_field('group_id_3', group_id_3)
         data.add_field('lang_id', lang_id)
-        await self._request(Route("POST", "https://mangadex.org/ajax/actions.ajax.php?function=chapter_upload", data=data, headers={"Accept-Encoding":"gzip, deflate, br", "X-Requested-With": "XMLHttpRequest", "Content-Type": "multipart/form-data", "Connection":"keep-alive"}))
+        return self._request(Route("POST", "https://mangadex.org/ajax/actions.ajax.php?function=chapter_upload", data=data, headers={"Accept-Encoding":"gzip, deflate, br", "X-Requested-With": "XMLHttpRequest", "Content-Type": "multipart/form-data", "Connection":"keep-alive"}))
 
     def wait_until_ready(self):
         return self._ready.acquire()
