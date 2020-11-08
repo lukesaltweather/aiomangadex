@@ -10,7 +10,8 @@ from urllib.parse import quote as _uriquote
 from .exceptions import HttpException
 
 class AsyncLeakyBucket:
-
+    #stolen from stackoverflow as im a lazy fuck
+    #https://stackoverflow.com/a/48685838
     def __init__(self, max_tasks: int, time_period: float = 60, loop: asyncio.events=None):
         self._delay_time = time_period / max_tasks
         self._sem = asyncio.BoundedSemaphore(max_tasks)
@@ -37,6 +38,8 @@ class AsyncLeakyBucket:
 class Route:
     BASE = 'https://mangadex.org/api/v2/'
 
+    __slots__ = ('path', 'method', 'headers', 'data', 'url')
+
     def __init__(self, method, path, headers=None, data=None, **parameters):
         self.path = path
         self.method = method
@@ -52,6 +55,9 @@ class Route:
             self.url = url
 
 class MangadexSession:
+
+    __slots__ = ('_loop', '_session', '_ready', '_lock')
+
     def __init__(self, session=None, loop=None, login: bool = False, *, username = None, password = None):
         self._loop = loop or asyncio.get_running_loop()
         self._session: aiohttp.ClientSession = session or aiohttp.ClientSession()
