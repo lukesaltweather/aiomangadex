@@ -1,12 +1,13 @@
+from abc import abstractmethod
 from dataclasses import dataclass
-
-from .session import MangadexSession
+from typing import Any
 
 @dataclass(frozen=True)
 class MangadexBase:
     id: int = None
-    http: MangadexSession = None
+    http: Any = None
 
     @classmethod
-    def from_json(cls, json):
-        return cls(**dict(json))
+    @abstractmethod
+    def from_json(cls, json, http):
+        pass
