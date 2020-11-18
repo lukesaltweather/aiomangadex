@@ -1,6 +1,6 @@
 import difflib
 
-from collections import Sequence
+from collections.abc import Sequence
 from typing import Union, List
 
 from .chapter import Chapter
@@ -42,15 +42,12 @@ class ChapterList(Sequence):
         Returns:
             ChapterList
         """
-        chapters = list()
-        tit = [chapter.title for chapter in self._chapters]
-        results = list()
-        for t in titles:
-            results.append(difflib.get_close_matches(t, tit, cutoff=difference_cutoff))
 
-        for chapter in self._chapters:
-            if chapter.title in results:
-                chapters.append(chapter)
+        tit = [chapter.title for chapter in self._chapters]
+
+        results = [difflib.get_close_matches(t, tit, cutoff=difference_cutoff) for t in titles]
+
+        chapters = [chapter for chapter in self._chapters if chapter.title in results]
 
         return ChapterList(chapters)
 
@@ -75,5 +72,5 @@ class ChapterList(Sequence):
 
     @classmethod
     def from_partial_chapters(cls, chapters):
-        chapters = [PartialChapter(chapter) for chapter in chapters]
+        chapters = [PartialChapter(**chapter) for chapter in chapters]
         return cls(chapters)
