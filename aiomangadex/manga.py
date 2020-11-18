@@ -5,54 +5,48 @@ import json
 
 import aiohttp
 
+from collections import namedtuple
 from dataclasses import dataclass
-from typing import List, Union
+from datetime import datetime
+from typing import List, Union, Dict
 
-from .chapter import Chapter, ChapterList
+from .chapter import Chapter
+from .chapterlist import ChapterList
 from .base import MangadexBase
 
 
 @dataclass(frozen=True)
 class Manga(MangadexBase):
 
-    id: int = None
-    cover_url: str = None
+    title: str = None
+    altTitles: List[str] = None
     description: str = None
-    rating: dict = None
-    demographic: int = None
-    last_volume: int = None
-    last_updated: int = None
-    alt_names: list = None
-    title : str = None
-    artist: str = None
-    author: str = None
-    status: int = None
-    genres: list = None
-    last_chapter: int = None
-    lang_name: str = None
-    lang_flag: str = None
-    hentai: bool = None
-    links: dict = None
-    related: List = None
+    artist: List[str] = None
+    author: List[str] = None
+    publication: Dict = None
+    tags: List[int] = None
+    lastChapter: int = None
+    lastVolume: int = None
+    isHentai: bool = None
+    links: Dict = None
+    relations: List[str] = None
+    rating: Dict = None
     views: int = None
     follows: int = None
-    covers: List[str] = None
     comments: int = None
+    lastUploaded: datetime = None
+    mainCover: str = None
     chapters: ChapterList = None
 
-async def fetch_manga(manga_id: int) -> Manga:
-    """
-    Used to fetch a manga object by id.
-    Args:
-        manga_id ( int ): manga id, as in the url
+    @classmethod
+    def from_json(cls, json, http):
+        manga_data = json.pop('manga')
+        lastUploaded = datetime.fromtimestamp(manga_data.pop('lastUploaded', 0))
+        chapters = ChapterList.from_partial_chapters(json.pop('chapters', []))
+        return cls(lastUploaded=lastUploaded, chapters=chapters, http=http, **manga_data)
 
-    Returns:
-        manga ( aiomangadex.Manga ): Manga Instance
-    """
-    async with _session.get(f'https://mangadex.org/api/manga/{manga_id}') as resp:
-        response = await resp.json()
-    chapters = []
-    for key, value in response.get('chapter').items():
-        chapters.append(Chapter(id=key, **dict(value), session=_session))
-    chapters.reverse()
-    return Manga(**dict(response.get('manga')), chapters=ChapterList(chapters), id=manga_id, session=_session)
+    async def fetch_chapter(self, *, language=None, number=None, volume=None, multiple=False) -> Union[Chapter, ChapterList]:
+        raise NotImplementedError
+
+    def upload_chapter(self, filestream, chapter: str, lang_id: str, group_id: int, *, title=None, volume=None, group_id_2=None, group_id_3=None):
+        return self.http.upload_chapter(filestream, manga_id=self.id, lang_id=lang_id, volume=volume, chapter_number=chapter, chapter_title=title, group_id=group_id, group_id_2=group_id_2, group_id_3=group_id_3)
