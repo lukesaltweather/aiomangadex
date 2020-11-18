@@ -2,12 +2,17 @@ import asyncio
 import io
 import json
 import typing
+import weakref
 
 import aiohttp
 
 from urllib.parse import quote as _uriquote
 
 from .exceptions import HttpException
+from .manga import Manga
+from .user import User
+from .chapter import Chapter
+from .group import Group
 
 class AsyncLeakyBucket:
     #stolen from stackoverflow as im a lazy fuck
@@ -54,15 +59,38 @@ class Route:
         else:
             self.url = url
 
+class Cache:
+    __slots__ = ('user_cache', 'manga_cache', 'chapter_cache', 'group_cache')
+
+    def __init__(self):
+        self.user_cache = {}
+        self.manga_cache = {}
+        self.chapter_cache = {}
+        self.group_cache = {}
+
+    def get_user(self, id):
+        return self.user_cache.get(id, None)
+
+    def get_manga(self, id):
+        return self.manga_cache.get(id, None)
+
+    def get_chapter(self, id):
+        return self.chapter_cache.get(id, None)
+
+    def get_group(self, id):
+        return self.group_cache.get(id, None)
+
+
 class MangadexSession:
 
-    __slots__ = ('_loop', '_session', '_ready', '_lock')
+    __slots__ = ('_loop', '_session', '_ready', '_lock', '_cache')
 
     def __init__(self, session=None, loop=None, login: bool = False, *, username = None, password = None):
         self._loop = loop or asyncio.get_running_loop()
         self._session: aiohttp.ClientSession = session or aiohttp.ClientSession()
         self._ready = asyncio.Semaphore(0)
         self._lock = AsyncLeakyBucket(1, 1.0)
+        # self._cache = Cache()
         if login:
             self._loop.create_task(self._login(user=username, password=password))
 
@@ -81,80 +109,82 @@ class MangadexSession:
             pass
         self._ready.release()
 
-    def get_manga(self, manga_id, include_partial_chapters = False):
+    async def _logout(self):
+        raise NotImplementedError
+
+    def fetch_manga(self, manga_id, include_partial_chapters = False):
         if include_partial_chapters:
             return self._request(Route("GET", f"manga/{manga_id}", include='chapters'))
         return self._request(Route("GET", f"manga/{manga_id}"))
 
-    def get_manga_covers(self, manga_id):
+    def fetch_manga_covers(self, manga_id):
         return self._request(Route("GET", f"manga/{manga_id}/covers"))
 
-    def get_partial_chapters(self, manga_id):
+    def fetch_partial_chapters(self, manga_id):
         return self._request(Route("GET", f"manga/{manga_id}/chapters"))
 
-    def get_chapter(self, chapter_id_or_hash: int):
-        return self._request(Route("GET", f"chapters/{chapter_id_or_hash}"))
+    def fetch_chapter(self, chapter_id_or_hash: int):
+        return self._request(Route("GET", f"chapter/{chapter_id_or_hash}"))
 
-    def get_group(self, group_id: int, *, include_chapter: bool = None):
+    def fetch_group(self, group_id: int, *, include_chapter: bool = None):
         if not include_chapter:
             return self._request(Route("GET", f"group/{group_id}"))
         return self._request(Route("GET", f"group/{group_id}?include=chapters"))
 
-    def get_group_partial_chapters(self, group_id: int, page: int = 0, limit: int = 100):
+    def fetch_group_partial_chapters(self, group_id: int, page: int = 0, limit: int = 100):
         return self._request(Route("GET", f"group/{group_id}?p={page}&limit={limit}"))
 
-    def get_user(self, user_id, *, include_chapters: bool = None):
+    def fetch_user(self, user_id, *, include_chapters: bool = None):
         if not include_chapters:
             return self._request(Route("GET", f"/users/{user_id}"))
         return self._request(Route("GET", f"user/{user_id}?include=chapters"))
 
-    def get_user_followed_manga(self, user_id: typing.Union[int, str] = "me"):
+    def fetch_user_followed_manga(self, user_id: typing.Union[int, str] = "me"):
         return self._request(Route("GET", f"user/{user_id}/followed-manga"))
 
-    def get_user_chapters(self, user_id = 'me', page = 0, limit = 100):
+    def fetch_user_chapters(self, user_id = 'me', page = 0, limit = 100):
         #auth
         return self._request(Route("GET", f"user/{user_id}/chapters", p=page, limit=limit))
 
-    def get_user_settings(self, user_id = 'me'):
+    def fetch_user_settings(self, user_id = 'me'):
         #auth
         return self._request(Route("GET", f"user/{user_id}/settings"))
 
-    def get_user_followed_updates(self, user_id = 'me', page = 1, type = 0, hentai = 0, delayed = False):
+    def fetch_user_followed_updates(self, user_id = 'me', page = 1, type = 0, hentai = 0, delayed = False):
         #auth
         return self._request(Route("GET", f"user/{user_id}/followed-updates", p=page, type=type, hentai=hentai, delayed=delayed))
 
-    def get_user_ratings(self, user_id):
+    def fetch_user_ratings(self, user_id):
         #auth
         return self._request(Route("GET", f"user/{user_id}/ratings"))
 
-    def get_user_manga_info(self, user_id, manga_id):
+    def fetch_user_manga_info(self, user_id, manga_id):
         #auth
         return self._request(Route("GET", f"user/{user_id}/manga/{manga_id}"))
 
-    def get_all_tags(self):
+    def fetch_all_tags(self):
         return self._request(Route("GET", f"tag"))
 
-    def get_tag(self, tag_id):
+    def fetch_tag(self, tag_id):
         return self._request(Route("GET", f"tag/{tag_id}"))
 
     def set_marker(self, chapter: typing.List[int], set_to: bool = True):
         return self._request(Route("POST", "user/me/marker", {"Content-Type": "application/json"}, read=set_to, body = json.dumps(chapter)))
 
-    def upload_chapter(self, file: io.BytesIO, *, filename='chapter.zip', manga_id: int, chapter_title=None, volume=None, chapter_number: float, group_id: int, group_id_2: int = None, group_id_3: int = None, lang_id: str):
+    def upload_chapter(self, file: io.BufferedIOBase, *, filename, manga_id: int, chapter_title='', volume: float = '', chapter_number: float, lang_id: int, group_id: int, group_id_2: int= '', group_id_3: int = ''):
         data = aiohttp.FormData()
+        data.add_field('manga_id', str(manga_id))
+        data.add_field('volume_number', str(volume))
+        data.add_field('chapter_number', str(chapter_number))
+        data.add_field('chapter_name', str(chapter_title))
+        data.add_field('lang_id', str(lang_id))
+        data.add_field('group_id', str(group_id))
         data.add_field('file',
-                       file,
-                       filename=filename,
-                       content_type='application/x-zip-compressed')
-        data.add_field('manga_id', manga_id)
-        data.add_field('chapter_name', chapter_title)
-        data.add_field('volume_number', volume)
-        data.add_field('chapter_number', chapter_number)
-        data.add_field('group_id', group_id)
-        data.add_field('group_id_2', group_id_2)
-        data.add_field('group_id_3', group_id_3)
-        data.add_field('lang_id', lang_id)
-        return self._request(Route("POST", "https://mangadex.org/ajax/actions.ajax.php?function=chapter_upload", data=data, headers={"Accept-Encoding":"gzip, deflate, br", "X-Requested-With": "XMLHttpRequest", "Content-Type": "multipart/form-data", "Connection":"keep-alive"}))
+                       file, filename=filename)
+        data.add_field('group_id_2', str(group_id_2))
+        data.add_field('group_id_3', str(group_id_3))
+        return self._session.post("https://mangadex.org/ajax/actions.ajax.php?function=chapter_upload", data=data, headers={"Connection":"keep-alive", "dnt": "1", "origin": "https://mangadex.org", "referer": f"https://mangadex.org/manga/{manga_id}", "x-requested-with": "XMLHttpRequest"})
 
     def wait_until_ready(self):
+        # rewrite using a future
         return self._ready.acquire()
